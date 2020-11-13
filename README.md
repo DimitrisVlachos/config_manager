@@ -7,7 +7,9 @@ variable_name = "data.here"
 array_variable_name = "0.0,1.0,2.0,3.0,4.0"
 
 # Simple example :
+
 #include "config_mgr.hpp"
+
 int main() {
     config_manager_c cfg("cfg.txt");
     std::cout << "value = " << cfg.gets("value") << std::endl;
