@@ -12,6 +12,10 @@ variable_name = "data.here"
     //Change value
     cfg.setd("double",7.0);
     
+    //Read vector
+    std::vector<double> my_doubles;
+    cfg.getd("array_with_doubles",my_doubles,",;"); //delimiter list
+    
     //Update original
     cfg.update();
     
