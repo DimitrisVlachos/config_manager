@@ -1,7 +1,9 @@
+
+#define CONFIG_MGR_HPP
 /*
 
-	Author : Dimitris Vlachos / DimitrisV22@gmail.com 
-	Git : https://github.com/DimitrisVlachos
+        Author : Dimitris Vlachos / DimitrisV22@gmail.com
+        Git : https://github.com/DimitrisVlachos
 */
 
 #ifndef _config_mgr_hpp_
@@ -11,6 +13,7 @@
 #include <fstream>
 #include <stdint.h>
 #include <unordered_map>
+#include "string_utils.hpp"
 
 class config_manager_c {
     private:
@@ -26,6 +29,15 @@ class config_manager_c {
         return &p->second;
     }
 
+    inline bool get_entry_ex(const std::string& id,std::string& res) const {
+        auto p = m_cfg.find(id);
+        if (p == m_cfg.end())
+            return false;
+
+        res = p->second;
+        return true;
+    }
+
     inline void update_entry(const std::string& id,const std::string& v) {
         auto p = m_cfg.find(id);
         if (p == m_cfg.end()) {
@@ -36,6 +48,10 @@ class config_manager_c {
         p->second = v;
     }
 
+    //TODO
+    bool load_chunk(const std::string& fn,std::vector<char>& res) {
+        return false;
+    }
     public:
 
     config_manager_c(const std::string& path) {  load(path); }
@@ -44,7 +60,40 @@ class config_manager_c {
 
     //Get
     inline const std::string& gets(const std::string& id) const {
-        return *get_entry(id);
+        auto e = get_entry(id);
+        if (!e) {
+            static const std::string def_ret="null";
+            return def_ret;
+        }
+        return *e;
+    }
+
+    inline const bool gets_ex(const std::string& id,std::string& res) const {
+        return get_entry_ex(id,res);
+    }
+
+    inline void gets(const std::string& id,std::vector<std::string>& res,const std::string& delim_list=",",const bool skip_whitespace = true) {
+        res.clear();
+        std::string s;
+        if (!gets_ex(id,s))
+            return;
+        string_utils::split_string(s,delim_list,res,skip_whitespace);
+    }
+
+    inline void geti(const std::string& id,std::vector<int32_t>& res,const std::string& delim_list=",",const bool skip_whitespace = true) {
+        res.clear();
+        std::string s;
+        if (!gets_ex(id,s))
+            return;
+        string_utils::split_string(s,delim_list,res,skip_whitespace);
+    }
+
+    inline void getd(const std::string& id,std::vector<double>& res,const std::string& delim_list=",",const bool skip_whitespace = true) {
+        res.clear();
+        std::string s;
+        if (!gets_ex(id,s))
+            return;
+        string_utils::split_string(s,delim_list,res,skip_whitespace);
     }
 
     inline int32_t geti(const std::string& id) const {
@@ -98,25 +147,24 @@ class config_manager_c {
         std::string data;
 
         while (std::getline(fp,buf)) {
-
             size_t eq_pos = buf.find('=');
             if (eq_pos == std::string::npos)
                 continue;
             id="";
-            for (size_t i = 0;i < eq_pos;++i)
+            for (size_t i = 0;i < eq_pos;++i) {
+                if (isspace(buf[i]))
+                    continue;
                 id += buf[i];
-           // id = buf.substr(0,eq_pos);
+            }
             size_t start = buf.find('\"',eq_pos+1);
             if (start == std::string::npos)
                 continue;
             size_t end = buf.find('\"',start+1);
             if (end == std::string::npos)
                 continue;
-           // data = buf.substr(start+1,(end-start)+1);
             data="";
             for (size_t i = start+1;i < end;++i)
                 data += buf[i];
-
             update_entry(id,data);
         }
 
