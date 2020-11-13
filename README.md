@@ -3,6 +3,7 @@ A basic readable-text configuration manager
 
 # Config Script Format 
 variable_name = "data.here"
+array_variable_name = "0.0,1.0,2.0,3.0,4.0"
 
 # Simple example :
     config_manager_c cfg("cfg.txt");
@@ -14,7 +15,7 @@ variable_name = "data.here"
     
     //Read vector
     std::vector<double> my_doubles;
-    cfg.getd("array_with_doubles",my_doubles,",;"); //delimiter list
+    cfg.getd("array_variable_name",my_doubles,",;"); //delimiter list
     
     //Update original
     cfg.update();
