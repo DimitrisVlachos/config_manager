@@ -1,3 +1,7 @@
+/*
+        Author : Dimitris Vlachos / DimitrisV22@gmail.com
+        Git : https://github.com/DimitrisVlachos
+*/
 #ifndef _string_utils_hpp_
 #define _string_utils_hpp_
 #include <unordered_set>
